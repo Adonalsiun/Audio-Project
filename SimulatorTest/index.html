@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Sonification Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/lint/lint.min.css">
+</head>
+<body>
+    <header>
+        <h1>Code Sonification Simulator</h1>
+        <p>An auditory feedback system for visually impaired programmers</p>
+    </header>
+
+    <main class="container">
+        <div class="editor-container">
+            <h2>Live Text Editor</h2>
+            <textarea id="code-editor">// Start coding here
+function helloWorld() {
+    console.log("Hello, world!");
+}
+
+helloWorld();</textarea>
+        </div>
+
+        <div class="controls-container">
+            <h2>Researcher Controls</h2>
+            
+            <div class="control-group">
+                <h3>Sound Profiles</h3>
+                <div class="control">
+                    <label for="sound-profile">Sound Profile:</label>
+                    <select id="sound-profile">
+                        <option value="standard">Standard</option>
+                        <option value="minimal">Minimal</option>
+                        <option value="detailed">Detailed</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Sound Demonstration</h3>
+                <button id="demo-btn">Start Sound Demo</button>
+                <div class="status-item">
+                    <span class="status-label">Demo:</span>
+                    <span id="demo-status">Ready</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Audio Settings</h3>
+                <div class="control">
+                    <label for="master-volume">Master Volume:</label>
+                    <input type="range" id="master-volume" min="0" max="1" step="0.1" value="0.7">
+                    <span id="master-volume-value">70%</span>
+                </div>
+
+                <div class="control">
+                    <label for="tts-volume">TTS Volume:</label>
+                    <input type="range" id="tts-volume" min="0" max="1" step="0.1" value="0.8">
+                    <span id="tts-volume-value">80%</span>
+                </div>
+
+                <div class="control">
+                    <label for="sonification-volume">Sonification Volume:</label>
+                    <input type="range" id="sonification-volume" min="0" max="1" step="0.1" value="0.6">
+                    <span id="sonification-volume-value">60%</span>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Feedback Settings</h3>
+                <div class="checkbox-control">
+                    <input type="checkbox" id="error-feedback" checked>
+                    <label for="error-feedback">Syntax Error Feedback</label>
+                </div>
+
+                <div class="control">
+                    <label for="error-feedback-mode">Error Feedback Mode:</label>
+                    <select id="error-feedback-mode">
+                        <option value="immediate">Immediate</option>
+                        <option value="compilation">On Compilation</option>
+                    </select>
+                </div>
+
+                <div class="checkbox-control">
+                    <input type="checkbox" id="indentation-feedback" checked>
+                    <label for="indentation-feedback">Indentation Feedback</label>
+                </div>
+
+                <div class="checkbox-control">
+                    <input type="checkbox" id="function-feedback" checked>
+                    <label for="function-feedback">Function Call Feedback</label>
+                </div>
+
+                <div class="checkbox-control">
+                    <input type="checkbox" id="loop-feedback" checked>
+                    <label for="loop-feedback">Loop Iteration Feedback</label>
+                </div>
+
+                <div class="checkbox-control">
+                    <input type="checkbox" id="adaptive-feedback" checked>
+                    <label for="adaptive-feedback">Adaptive Feedback</label>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Data Playback Mode</h3>
+                <div class="control">
+                    <label for="sample-data-dropdown">Sample Data:</label>
+                    <select id="sample-data-dropdown"></select>
+                </div>
+                <button id="playback-btn">Start Playback</button>
+                <div class="status-item">
+                    <span class="status-label">Status:</span>
+                    <span id="playback-status">Stopped</span>
+                </div>
+            </div>
+            <div class="control-group">
+                <h3>Test Data</h3>
+                <div class="control">
+                    <label for="test-data">Load Test Data:</label>
+                    <select id="test-data">
+                        <option value="none">None</option>
+                        <option value="syntax-errors">Syntax Errors</option>
+                        <option value="indentation">Indentation</option>
+                        <option value="function-calls">Function Calls</option>
+                        <option value="loops">Loops</option>
+                        <option value="mixed">Mixed Scenario</option>
+                        <option value="challenge">Challenge Mode</option>
+                    </select>
+                </div>
+                <button id="load-data-btn">Load Data</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Simulation</h3>
+                <button id="play-btn">Play Simulation</button>
+                <button id="pause-btn">Pause Simulation</button>
+                <button id="reset-btn">Reset</button>
+            </div>
+
+            <div class="control-group">
+                <h3>Challenge Mode</h3>
+                <button id="challenge-btn">Start Challenge</button>
+                <div class="status-item challenge-status">
+                    <span class="status-label">Status:</span>
+                    <span id="challenge-status">Inactive</span>
+                </div>
+                <div class="status-item challenge-time">
+                    <span class="status-label">Time:</span>
+                    <span id="challenge-time">00:00</span>
+                </div>
+                <button id="compile-btn">Compile Code</button>
+            </div>
+        </div>
+    </main>
+
+    <div class="audio-debug">
+        <h3>Audio Feedback Status</h3>
+        <div id="audio-status" class="status-container">
+            <div class="status-item">
+                <span class="status-label">Current Sound:</span>
+                <span id="current-sound-status">None</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Last Error:</span>
+                <span id="error-status">None</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Error Type:</span>
+                <span id="error-type">None</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Indentation Level:</span>
+                <span id="indentation-status">0</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Code Sonification Simulator - An auditory feedback system for visually impaired programmers</p>
+    </footer>
+
+    <!-- Scripts -->
+    <!-- CodeMirror -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/matchbrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/edit/closebrackets.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/addon/lint/javascript-lint.min.js"></script>
+
+    <!-- JSHINT for linting -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.4/jshint.min.js"></script>
+    
+    <!-- Custom scripts -->
+    <script src="js/audio.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
